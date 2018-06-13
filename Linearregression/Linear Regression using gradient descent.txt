@@ -1,0 +1,79 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as mpl
+
+
+data_url="C:/Users/Santosh/Desktop/Intern/Sample/.ipynb_checkpoints/train1.csv"
+data=pd.read_csv(data_url)
+data.describe()
+xs=pd.DataFrame({'x0':1.,'x':data.X})
+x=data.X.values
+y=data.Y.values
+mpl.plot(x,y,'rx')
+theta=pd.DataFrame({'theta':[0.]*2})
+thetaT=theta.T
+
+
+#xs.shape()
+#np.dot(xs,theta)
+#np.dot((np.dot(xs,theta)-y[10]),xs.iloc[10,1])
+#z=np.dot((np.dot(xs,theta)).item((10-1,0))-y[10-1],xs.iloc[10-1,:])
+#print(z)
+print(theta)
+#theta=theta-z.T
+
+
+
+def costFunction(theta,xs,y):
+    J = 0.
+    for i in range(1,len(y)):
+        J = J + (1/(2*len(y)))*((np.dot(xs,theta)-y[i]))**2
+        return J
+
+def gradientDescent(xs, y, theta, alpha, m, iterations):
+    xTrans = xs.transpose()
+    for i in range(0, iterations):
+        hypothesis = np.dot(xs, theta)
+        loss = hypothesis - y
+        # avg cost per example (the 2 in 2*m doesn't really matter here.
+        # But to be consistent with the gradient, I include it)
+        cost = np.sum(loss ** 2) / (2 * m)
+        print("Iteration %d " %i )
+        #print("Iteration %d | Cost: %f" % (i, cost))
+        # avg gradient per example
+        gradient = np.dot(xTrans, loss) / m
+        # update
+        theta = theta - alpha * gradient
+    return theta
+
+def abline(slope, intercept):
+    """Plot a line from slope and intercept"""
+    axes = mpl.gca()
+    x_vals = np.array(axes.get_xlim())
+    y_vals = intercept + slope * x_vals
+    mpl.plot(x_vals, y_vals, '--')
+    
+numIterations= 10000
+m, n = np.shape(xs)
+alpha = 0.0005
+theta = np.ones(n)
+theta = gradientDescent(xs, y, theta, alpha, m, numIterations)
+print(theta)
+abline(theta[1],theta[0])
+
+
+testurl="C:/Users/Santosh/Desktop/Intern/Sample/train1.csv"
+testdata=pd.read_csv(testurl)
+xstest=pd.DataFrame({'x0':1.,'x':testdata.X})
+m, n = np.shape(xstest)
+xtest=testdata.X.values
+ytest=testdata.Y.values
+ycompute=np.dot(xstest,theta)
+loss=ycompute-ytest
+print("Average error is %f"%np.mean(loss))
+print("Computed_values   Original_values   Error")
+print("The errors are:")
+#for i in range(1,m):
+    #print("%f     %f     %f"%(ycompute[i-1],ytest[i-1],(ycompute[i-1]-ytest[i-1])))
+
+    
